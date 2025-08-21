@@ -16,6 +16,7 @@ public class VillagerTraderConfig {
     public ArrayList<String> buyItems = Lists.newArrayList(ItemRegistry.EXPERIENCE_BOTTLE.name());
     public int restockStacks = 2;
     public int restockEmeraldCountThreshold = 64;
+    public int restockBooksCountThreshold = 64;
     public BlockPos restockChest = BlockPos.ZERO;
     public BlockPos restockChestBooks = BlockPos.ZERO;
     public BlockPos storeChest = BlockPos.ZERO;
@@ -26,4 +27,6 @@ public class VillagerTraderConfig {
     public Map<String, Integer> desiredEnchantments = new HashMap<>();
     public boolean onlyBuyDesiredEnchantments = true;
     public boolean onlyBuyMaxLevelEnchantments = false;
+    public boolean buyBookshelvesFromLibrarians = true;
 }
+
