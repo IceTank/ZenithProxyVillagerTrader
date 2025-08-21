@@ -89,6 +89,7 @@ public class VillagerTrader extends Module {
 
     private ClientboundMerchantOffersPacket onMerchantOffers(ClientboundMerchantOffersPacket packet, ClientSession session) {
         this.offersPacket = packet;
+        this.restockStateMachine.setLibrarianOffersPacket(packet);
         debug("Offers: {}", packet);
         return packet;
     }

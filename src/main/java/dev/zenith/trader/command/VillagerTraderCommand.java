@@ -37,9 +37,11 @@ public class VillagerTraderCommand extends Command {
             .description("""
               Buys items from villagers with emeralds.
               
-              Automatically restocks emeralds, trades with villagers, and stores the bought items
+              Automatically restocks emeralds and books, trades with villagers, and stores the bought items
               
               `restockStacks` -> how many stacks of emeralds/emerald blocks to restock. Emerald blocks are crafted down to emeralds.
+              `restockBooksCountThreshold` -> minimum books needed before restocking from librarians or book chest
+              `buyBookshelvesFromLibrarians` -> whether to buy bookshelves from librarians and break them for books
               `villagerTradeRestockWait` -> seconds it waits after all villagers are out of stock. 1200 = 1 minecraft day
               `maxSpendPerTrade` -> max emeralds to spend per trade
               `buyItemStoreStacksThreshold` -> how many stacks/slots of items to buy before it stores them
@@ -56,8 +58,11 @@ public class VillagerTraderCommand extends Command {
                 "buyItems clear",
                 "restockStacks <stacks>",
                 "restockEmeraldCountThreshold <amount>",
+                "restockBooksCountThreshold <amount>",
                 "restockChest <x> <y> <z>",
+                "restockChestBooks <x> <y> <z>",
                 "storeChest <x> <y> <z>",
+                "buyBookshelvesFromLibrarians <true/false>",
                 "villagerTradeRestockWait <seconds>",
                 "maxSpendPerTrade <amount>",
                 "buyItemStoreStacksThreshold <stacks>",
@@ -160,6 +165,11 @@ public class VillagerTraderCommand extends Command {
                 PLUGIN_CONFIG.restockEmeraldCountThreshold = getInteger(c, "amount");
                 c.getSource().getEmbed()
                     .title("Restock Emerald Count Threshold Set");
+            })))
+            .then(literal("restockBooksCountThreshold").then(argument("amount", integer(1, 250)).executes(c -> {
+                PLUGIN_CONFIG.restockBooksCountThreshold = getInteger(c, "amount");
+                c.getSource().getEmbed()
+                    .title("Restock Books Count Threshold Set");
             })))
             .then(literal("restockChest").then(argument("pos", blockPos()).executes(c -> {
                 PLUGIN_CONFIG.restockChest = getBlockPos(c, "pos");
@@ -319,6 +329,12 @@ public class VillagerTraderCommand extends Command {
                 c.getSource().getEmbed()
                     .title("Only Buy Max Level Enchantments " + (PLUGIN_CONFIG.onlyBuyMaxLevelEnchantments ? "Enabled" : "Disabled"));
                 return OK;
+            })))
+            .then(literal("buyBookshelvesFromLibrarians").then(argument("toggle", toggle()).executes(c -> {
+                PLUGIN_CONFIG.buyBookshelvesFromLibrarians = getToggle(c, "toggle");
+                c.getSource().getEmbed()
+                    .title("Buy Bookshelves From Librarians " + (PLUGIN_CONFIG.buyBookshelvesFromLibrarians ? "Enabled" : "Disabled"));
+                return OK;
             })));
     }
 
@@ -334,8 +350,10 @@ public class VillagerTraderCommand extends Command {
             .addField("Buy Items", "[" + String.join(", ", PLUGIN_CONFIG.buyItems) + "]")
             .addField("Restock Stacks", PLUGIN_CONFIG.restockStacks)
             .addField("Restock Emerald Count Threshold", PLUGIN_CONFIG.restockEmeraldCountThreshold)
+            .addField("Restock Books Count Threshold", PLUGIN_CONFIG.restockBooksCountThreshold)
             .addField("Restock Chest", "||" + (CONFIG.discord.reportCoords ? PLUGIN_CONFIG.restockChest : "Coords disabled") + "||")
             .addField("Restock Chest Books", "||" + (CONFIG.discord.reportCoords ? PLUGIN_CONFIG.restockChestBooks : "Coords disabled") + "||")
+            .addField("Buy Bookshelves From Librarians", toggleStr(PLUGIN_CONFIG.buyBookshelvesFromLibrarians))
             .addField("Store Chest", "||" + (CONFIG.discord.reportCoords ? PLUGIN_CONFIG.storeChest : "Coords disabled") + "||")
             .addField("Villager Trade Restock Wait", PLUGIN_CONFIG.villagerTradeRestockWaitSeconds + "s")
             .addField("Max Spend Per Trade", PLUGIN_CONFIG.maxSpendPerTrade)
